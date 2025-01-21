@@ -1,7 +1,8 @@
 {
-    "node_version": "20",
-    "graphs": {
-      "agent": "./my-app/graph.ts:graph"
-    },
-    "env": ".env"
-  }
+  "node_version": "20",
+  "graphs": {
+    "agent": "./src/graph.ts:simpleGraph"
+  },
+  "dependencies": ["."],
+  "env": ".env"
+}
