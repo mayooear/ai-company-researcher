@@ -1,0 +1,24 @@
+index.cjs
+index.js
+index.d.ts
+node_modules
+dist
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+yarn-error.log
+
+.turbo
+**/.turbo
+**/.eslintcache
+
+.env
+.env.full
+.env.quickstart
+.ipynb_checkpoints
+
+# Screenshots taken during tests
+src/tests/data/screenshots/
