@@ -1,6 +1,6 @@
 # AI Agent Company Researcher
 
-It can take several human hours to research the key information about a company and their key persons/decision makers. This app is built to automate this process and reduce this research and propsecting time to seconds using the power of AI agents.
+It can take several human hours to research the key information about a company and their key persons/decision makers. This app is built to automate this process and reduce this research and propsecting time to less than a minute using the power of AI agents.
 
 The user simply provides a valid `url` of the company, and within a minute, the agent will generate a concise company research report.
 
@@ -96,11 +96,13 @@ After a few seconds, you should see a pop up in the browser with the langsmith u
 
 The LangGraph Studio UI offers a new way to develop LLM applications by providing a specialized agent IDE that enables visualization, interaction, and debugging of complex agentic applications.
 
-You can read more about how it works[here](https://langchain-ai.github.io/langgraph/concepts/langgraph_studio/)
+You can read more about how it works [here].(https://langchain-ai.github.io/langgraph/concepts/langgraph_studio/)
 
 ## Demo
 
-To run the demo of the langgraph workflow in action, you can run the following command:
+In addition to visualizing your workflow in the LangGraph Studio UI, you can also run the demo of the langgraph workflow using the API directly.
+
+To run the demo, you can run the following command:
 
 ```bash
 yarn demo
@@ -109,3 +111,7 @@ yarn demo
 This will run the `demo.ts` file, which will start the workflow and stream the output to the console.
 
 ## Customization
+
+You can customize the prompts used in the workflow.
+
+[TO DO]

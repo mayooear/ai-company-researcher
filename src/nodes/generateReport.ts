@@ -1,8 +1,13 @@
-import { CompanyResearchState } from "../state.js";
+import { ChatOpenAI } from '@langchain/openai';
+import { openaiClient } from '../clients/openaiClient.js';
+import { CompanyResearchState } from '../state.js';
+import { SystemMessage } from '@langchain/core/messages';
 
 const GENERATE_REPORT_PROMPT = `
   You are a helpful assistant and an expert at market research.
-  Below, you are provided data extracted from the company's website: {COMPANY_URL}. Use this to generate a useful report about the company's mission, it's key persons, products, and other relevant market research info.
+  Below, you are provided data extracted from the company's website: {COMPANY_URL}. Use this data to generate a useful report that provides a complete overview of the company including it's mission, key persons, products, clients, competitors, and other relevant market research info.
+
+  At the end of your report, provide a concise overview diagram of the company's structure and market position in mermaid format.
 
   Your report MUST be in JSON format.
 
@@ -13,7 +18,7 @@ const GENERATE_REPORT_PROMPT = `
 `;
 
 const REVISION_PROMPT = `
-  You are a helpful assistant and an expert at market research. Below, you are provided with extracted data about a company and your generated report(s) based on this data.
+  You are a helpful assistant and an expert at market research. Below, you are provided with extracted data about a company and your recent generated report based on this data.
 
   Please revise and edit the generated report as per the user's instructions below:
   <REVISION INSTRUCTIONS>
@@ -33,49 +38,51 @@ const REVISION_PROMPT = `
 `;
 
 export async function generateReportNode(
-  state: CompanyResearchState,
+  state: CompanyResearchState
 ): Promise<Partial<CompanyResearchState>> {
   const extractedData = state.crawledData;
   const fallbackSearchResults = state.fallbackSearchKeyPersons;
   const userPrompt = state.userPrompt?.trim();
-  const reportRevisions = state.reportRevisions;
   const recentGeneratedReport = state.finalReport;
+
+  const llm = openaiClient;
 
   let isRevision = false;
   let revisionIncrement = 0;
   let prompt = GENERATE_REPORT_PROMPT.replace(
-    "{COMPANY_URL}",
-    state.userUrl,
-  ).replace("{EXTRACTED_DATA}", JSON.stringify(extractedData, null, 2));
-  if (userPrompt && userPrompt !== "") {
+    '{COMPANY_URL}',
+    state.userUrl
+  ).replace('{EXTRACTED_DATA}', JSON.stringify(extractedData, null, 2));
+  if (userPrompt && userPrompt !== '') {
     isRevision = true;
     revisionIncrement = 1;
 
-    prompt = REVISION_PROMPT.replace("{REVISION_PROMPT}", userPrompt)
+    prompt = REVISION_PROMPT.replace('{REVISION_PROMPT}', userPrompt)
       .replace(
-        "{REVISION}",
-        `Below is your most recent generated report revision the user would like to change:\n${recentGeneratedReport}`,
+        '{REVISION}',
+        `Below is your most recent generated report revision the user would like to change:\n${recentGeneratedReport}`
       )
-      .replace("{EXTRACTED_DATA}", JSON.stringify(extractedData, null, 2));
+      .replace('{EXTRACTED_DATA}', JSON.stringify(extractedData, null, 2));
   }
 
   // If no fallback results, remove the entire SEARCH_RESULTS section
   if (fallbackSearchResults.length === 0) {
-    prompt = prompt.replace("{SEARCH_RESULTS}", "");
+    prompt = prompt.replace('{SEARCH_RESULTS}', '');
   } else {
     prompt = prompt.replace(
-      "{SEARCH_RESULTS}",
+      '{SEARCH_RESULTS}',
       `\n\nADDITIONAL DATA FETCHED FROM THE WEB ABOUT THE COMPANY:\n ${JSON.stringify(
         fallbackSearchResults,
         null,
-        2,
-      )}`,
+        2
+      )}`
     );
   }
 
-  console.log("generation prompt", prompt);
-  console.log("isRevision", isRevision);
-  const finalReport = await generateFinalReport(prompt);
+  console.log('generation prompt', prompt);
+  console.log('isRevision', isRevision);
+  const finalReport = (await generateFinalReport(llm, prompt)) as string;
+  console.log('finalReport', finalReport);
   return {
     finalReport,
     reportRevisionsIncrement: revisionIncrement,
@@ -83,24 +90,7 @@ export async function generateReportNode(
   };
 }
 
-async function generateFinalReport(prompt: string) {
-  const fakeAISummary = {
-    summaryTitle: "Company Overview",
-    companyName: "Fake Company",
-    companyOverview: "Fake Overview",
-    keyPersons: [
-      {
-        name: "Fake Person",
-        role: "Fake Role",
-        description: "Fake Description",
-      },
-    ],
-    products: [
-      {
-        name: "Fake Product",
-        description: "Fake Description",
-      },
-    ],
-  };
-  return JSON.stringify(fakeAISummary, null, 2);
+async function generateFinalReport(llm: ChatOpenAI, prompt: string) {
+  const response = await llm.invoke([new SystemMessage(prompt)]);
+  return response.content;
 }

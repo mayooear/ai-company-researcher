@@ -17,7 +17,8 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "lint:langgraph-json": "node scripts/checkLanggraphPaths.js",
-    "lint:all": "yarn lint & yarn lint:langgraph-json"
+    "lint:all": "yarn lint & yarn lint:langgraph-json",
+    "langgraph:dev": "npx @langchain/langgraph-cli dev"
   },
   "dependencies": {
     "@langchain/community": "^0.3.26",
