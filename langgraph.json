@@ -1,7 +1,7 @@
 {
   "node_version": "20",
   "graphs": {
-    "agent": "./src/companyResearcherGraph.ts:companyResearcherGraph"
+    "companyresearcher": "./src/companyResearcherGraph.ts:companyResearcherGraph"
   },
   "dependencies": ["."],
   "env": ".env"

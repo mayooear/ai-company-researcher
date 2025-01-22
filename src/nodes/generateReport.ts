@@ -1,15 +1,18 @@
-import { ChatOpenAI } from '@langchain/openai';
 import { openaiClient } from '../clients/openaiClient.js';
 import { CompanyResearchState } from '../state.js';
 import { SystemMessage } from '@langchain/core/messages';
+import { generatedReportSchema } from '../schema.js';
+import { BaseLanguageModelInput } from '@langchain/core/language_models/base';
+import { Runnable } from '@langchain/core/runnables';
+import { z } from 'zod';
 
 const GENERATE_REPORT_PROMPT = `
-  You are a helpful assistant and an expert at market research.
-  Below, you are provided data extracted from the company's website: {COMPANY_URL}. Use this data to generate a useful report that provides a complete overview of the company including it's mission, key persons, products, clients, competitors, and other relevant market research info.
+  You are a helpful assistant and an expert at company market research.
+  Below, you are provided data extracted from the company's website: {COMPANY_URL}. Use this data to generate a useful report that provides a complete overview of the company including it's mission, key persons, products, clients, competitors, and other relevant market research info for accurate prospecting.
 
-  At the end of your report, provide a concise overview diagram of the company's structure and market position in mermaid format.
-
-  Your report MUST be in JSON format.
+  RULES: 
+  - Your final report MUST include a summary of company's market position and a concise overview diagram of the company's structure and market position in mermaid format.
+  - Your report MUST be in JSON format.
 
   EXTRACTED DATA:
   {EXTRACTED_DATA}
@@ -45,7 +48,7 @@ export async function generateReportNode(
   const userPrompt = state.userPrompt?.trim();
   const recentGeneratedReport = state.finalReport;
 
-  const llm = openaiClient;
+  const llm = openaiClient.withStructuredOutput(generatedReportSchema);
 
   let isRevision = false;
   let revisionIncrement = 0;
@@ -81,16 +84,19 @@ export async function generateReportNode(
 
   console.log('generation prompt', prompt);
   console.log('isRevision', isRevision);
-  const finalReport = (await generateFinalReport(llm, prompt)) as string;
+  const finalReport = await generateFinalReport(llm, prompt);
   console.log('finalReport', finalReport);
+  const finalReportJson = JSON.stringify(finalReport);
   return {
-    finalReport,
+    finalReport: finalReportJson,
     reportRevisionsIncrement: revisionIncrement,
-    reportRevisions: isRevision ? [finalReport] : [],
+    reportRevisions: isRevision ? [finalReportJson] : [],
   };
 }
 
-async function generateFinalReport(llm: ChatOpenAI, prompt: string) {
-  const response = await llm.invoke([new SystemMessage(prompt)]);
-  return response.content;
+async function generateFinalReport(
+  llm: Runnable<BaseLanguageModelInput, z.infer<typeof generatedReportSchema>>,
+  prompt: string
+) {
+  return await llm.invoke([new SystemMessage(prompt)]);
 }

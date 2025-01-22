@@ -1,18 +1,18 @@
-import { firecrawlClient } from '../clients/fireCrawlApi.js';
-import { CompanyResearchState } from '../state.js';
-import { validateSearchForKeyPersons } from '../tests/utils.js';
+import { firecrawlClient } from "../clients/fireCrawlApi.js";
+import { CompanyResearchState } from "../state.js";
+import { validateSearchForKeyPersons } from "../tests/utils.js";
 
 export async function fallbackSearchNode(
-  state: CompanyResearchState
+  state: CompanyResearchState,
 ): Promise<Partial<CompanyResearchState>> {
   const companyName = state.crawledData?.company?.name;
   if (!companyName) {
     // TODO: enable fallback search for company info
-    throw new Error('No company name found, skipping fallback search');
+    throw new Error("No company name found, skipping fallback search");
   }
   const query = `CEO of ${companyName}`;
   const competitorQuery = `Competitors of ${state.userUrl}`;
-  console.log('Search fallback with queries = ' + [query, competitorQuery]);
+  console.log("Search fallback with queries = " + [query, competitorQuery]);
   const searchPromises = [
     firecrawlClient.search(query, {
       limit: 5,
@@ -28,11 +28,11 @@ export async function fallbackSearchNode(
   const successfulResults = results
     .filter(
       (
-        result
+        result,
       ): result is PromiseFulfilledResult<{ success: boolean; data: any }> =>
-        result.status === 'fulfilled' &&
+        result.status === "fulfilled" &&
         Boolean(result.value.success) &&
-        Boolean(result.value.data)
+        Boolean(result.value.data),
     )
     .map((result) => result.value.data)
     .flat();
@@ -40,11 +40,11 @@ export async function fallbackSearchNode(
   if (successfulResults.length > 0) {
     // Transform FirecrawlDocument to expected format
     const searchResults = successfulResults.map((doc) => ({
-      url: doc.url || '',
-      title: doc.title || '',
-      description: doc.description || '',
+      url: doc.url || "",
+      title: doc.title || "",
+      description: doc.description || "",
     }));
-    console.log('Search results = ' + searchResults);
+    console.log("Search results = " + searchResults);
     const validatedKeyPersons =
       await validateSearchForKeyPersons(searchResults);
     return {

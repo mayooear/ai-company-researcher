@@ -1,14 +1,14 @@
-import { firecrawlClient } from '../clients/fireCrawlApi.js';
-import { completeExtractedCompanyInfoSchema } from '../schema.js';
-import { CompanyResearchState } from '../state.js';
-import { validateFirecrawlExtraction } from '../tests/utils.js';
+import { firecrawlClient } from "../clients/fireCrawlApi.js";
+import { completeExtractedCompanyInfoSchema } from "../schema.js";
+import { CompanyResearchState } from "../state.js";
+import { validateFirecrawlExtraction } from "../tests/utils.js";
 
 export async function firecrawlExtractNode(
-  state: CompanyResearchState
+  state: CompanyResearchState,
 ): Promise<Partial<CompanyResearchState>> {
   let url = state.userUrl.trim();
-  url = url.replace(/\/\*+$/, '');
-  url = url + '/*'; // crawls the entire site
+  url = url.replace(/\/\*+$/, "");
+  url = url + "/*"; // crawls the entire site
 
   const result = await firecrawlClient.extract([url], {
     schema: completeExtractedCompanyInfoSchema,
@@ -28,7 +28,7 @@ export async function firecrawlExtractNode(
     //validate key persons
     const validatedKeyPersons = await validateFirecrawlExtraction(result.data);
     return {
-      crawledData: result.data as CompanyResearchState['crawledData'],
+      crawledData: result.data as CompanyResearchState["crawledData"],
       validatedKeyPersons,
     };
   }
