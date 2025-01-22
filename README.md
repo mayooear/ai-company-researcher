@@ -6,8 +6,6 @@ The user simply provides a valid `url` of the company, and within a minute, the 
 
 Here's an image of the agent workflow:
 
-![Workflow](./workflow.png)
-
 The app is powered by:
 
 ### Techstack:
@@ -26,6 +24,8 @@ Together, these technologies enable this app to have the following features:
 - **Human Review and Refinement**: The workflow enables a human to review the generated report, make edits/recommendations, and re-generate the report again until they are satisfied to accept it.
 - **Effective state management**: LangGraph enables the agent to effectively manage and update the state of the agent. For example, the agent can keep track of the number of revisions made by the human reviewer.
 
+![ai-company-researcher-architecture](https://github.com/user-attachments/assets/134de859-ac38-4816-9113-2d0081870a87)
+
 ## Table of contents
 
 - [Quickstart](#quickstart)
@@ -35,7 +35,7 @@ Together, these technologies enable this app to have the following features:
 ## Quickstart
 
 > [!NOTE]
-> 🎥 For a visual guide, you can watch the full tutorial here [step-by-step video tutorial](TBA) that walks you through the account setup process and project configuration.
+> 🎥 For a visual guide, you can watch the full tutorial here [TUTORIAL WILL BE ADDED SHORTLY](TBA) that walks you through the account setup process and project configuration.
 
 This quickstart covers how to setup the Social Media Agent in a basic setup mode. This is the quickest way to get up and running, however it will lack some of the features of the full setup mode.
 
@@ -43,7 +43,7 @@ To get started, you'll need the following API keys/software:
 
 - [OpenAI API](https://platform.openai.com/api-keys) - General LLM
 - [LangSmith](https://smith.langchain.com/) - LangSmith API key required to run the LangGraph server locally (free)
-- [FireCrawl API](https://www.firecrawl.dev/) - Web scraping. New users get 500 credits for free
+- [FireCrawl API](https://www.firecrawl.dev/) - Web scraping. New users get 500 credits for free (If you want more, faster web scrapes you can use the code `MAYO10` at checkout for 10% off any plan)
 
 ### Clone the repository:
 
@@ -96,7 +96,7 @@ After a few seconds, you should see a pop up in the browser with the langsmith u
 
 The LangGraph Studio UI offers a new way to develop LLM applications by providing a specialized agent IDE that enables visualization, interaction, and debugging of complex agentic applications.
 
-You can read more about how it works [here].(https://langchain-ai.github.io/langgraph/concepts/langgraph_studio/)
+You can read more about how it works [here](https://langchain-ai.github.io/langgraph/concepts/langgraph_studio/)
 
 ## Demo
 
@@ -112,6 +112,6 @@ This will run the `demo.ts` file, which will start the workflow and stream the o
 
 ## Customization
 
-You can customize the prompts used in the workflow.
+You can customize the generated reports, you can modify the prompts in the `generateReport.ts` to change the style, content and format. In `fallbackSearch.ts`, you can change the queries used to fetch extra information via web search. In `extractCompanyData.ts` you can modify the prompt used by firecrawl to extract specific structured data from web pages it crawls.
 
-[TO DO]
+If you want to change the schema of data extracted from web pages and used to generate the report, you can change it in `schema.ts.`
