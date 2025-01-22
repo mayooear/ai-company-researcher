@@ -38,7 +38,7 @@ export const CompanyResearchAnnotation = Annotation.Root({
   /**
    * The number of times the post has been revised..
    */
-  reportRevisionsCount: Annotation<number>({
+  reportRevisionsIncrement: Annotation<number>({
     reducer: (state, update) => state + update,
     default: () => 0,
   }),

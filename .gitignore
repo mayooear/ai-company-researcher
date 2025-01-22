@@ -22,3 +22,5 @@ yarn-error.log
 
 # Screenshots taken during tests
 src/tests/data/screenshots/
+# LangGraph API
+.langgraph_api

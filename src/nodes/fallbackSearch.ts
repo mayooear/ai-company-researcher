@@ -1,5 +1,7 @@
+import { firecrawlClient } from "../clients/FireCrawlApi.js";
 import { CompanyResearchState } from "../state.js";
 import { validateSearchForKeyPersons } from "../tests/utils.js";
+import { FallbackSearchResult } from "../types.js";
 
 export async function fallbackSearchNode(
   state: CompanyResearchState,
@@ -7,40 +9,31 @@ export async function fallbackSearchNode(
   const companyName = state.crawledData?.company?.name;
   if (!companyName) {
     // TODO: enable fallback search for company info
-    console.log("No company name found, skipping fallback search");
-    return {
-      fallbackSearchUsed: false,
-    };
+    throw new Error("No company name found, skipping fallback search");
   }
   const query = `CEO of ${companyName}`;
   console.log("Search fallback with query = " + query);
-  const result = await callFirecrawlSearch(query);
+  const result = await firecrawlClient.search(query, {
+    limit: 5,
+    timeout: 60000,
+  });
   if (result.success && result.data) {
-    const validatedKeyPersons = await validateSearchForKeyPersons(result.data);
+    // Transform FirecrawlDocument to expected format
+    const searchResults = result.data.map((doc) => ({
+      url: doc.url || "",
+      title: doc.title || "",
+      description: doc.description || "",
+    }));
+    console.log("Search result = " + searchResults);
+    const validatedKeyPersons =
+      await validateSearchForKeyPersons(searchResults);
     return {
       fallbackSearchUsed: true,
-      fallbackSearchKeyPersons: result.data,
+      fallbackSearchKeyPersons: searchResults,
       validatedKeyPersons,
     };
   }
   return {
     fallbackSearchUsed: false,
-  };
-}
-
-async function callFirecrawlSearch(query: string): Promise<{
-  success: boolean;
-  data?: Array<{ url: string; title: string; description: string }>;
-}> {
-  // SIMULATED search results
-  return {
-    success: true,
-    data: [
-      {
-        url: "https://www.linkedin.com/in/jane-doe-ceo",
-        title: "Jane Doe - CEO at SomeCo - LinkedIn",
-        description: "Jane Doe, President & CEO of SomeCo...",
-      },
-    ],
   };
 }

@@ -71,7 +71,7 @@ function validateSearchForKeyPersons(
 ): boolean {
   // We'll do a trivial parse:
   // If any mention includes "CEO" in title or description, we glean some structured result
-  const keyTerms = ["ceo", "chief executive officer", "founder"];
+  const keyTerms = ["ceo", "chief executive officer", "founder", "cto"];
   const found = searchData.filter((d) => {
     const text = (d.description + " " + d.title).toLowerCase();
     return keyTerms.some((term) => text.includes(term));

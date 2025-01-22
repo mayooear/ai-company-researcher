@@ -1,4 +1,4 @@
-import { CompanyResearchState } from "../state.js";
+import { CompanyResearchState } from "../../state.js";
 
 const GENERATE_REPORT_PROMPT = `
   You are a helpful assistant and an expert at market research.

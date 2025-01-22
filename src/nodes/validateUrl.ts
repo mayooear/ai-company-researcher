@@ -4,41 +4,78 @@ import { Command, END } from "@langchain/langgraph";
 export function validateUrlNode(
   state: CompanyResearchState,
 ): Partial<CompanyResearchState> {
-  const url = state.userUrl;
-  if (!url || typeof url !== "string") {
-    return {
-      validUrl: false,
-    };
+  let urlInput = state.userUrl;
+  if (!urlInput || typeof urlInput !== "string") {
+    throw new Error("URL is required and must be a string.");
   }
 
-  if (!url.startsWith("http")) {
-    console.log("URL invalid: must start with http or https");
-    return {
-      validUrl: false,
-    };
+  urlInput = urlInput.trim();
+
+  // Auto-prepend 'https://' if missing
+  if (!/^https?:\/\//i.test(urlInput)) {
+    urlInput = `https://${urlInput}`;
   }
 
-  // e.g. quick checks:
-  // 1. is well-formed url
-  // 2. not a major domain (linkedin, facebook, youtube, etc.)
-  // 3. maybe do a HEAD request or a library call
+  let url: URL;
 
-  const majorDomains = [
-    "linkedin",
-    "facebook",
-    "youtube",
-    "twitter",
-    "instagram",
+  try {
+    url = new URL(urlInput);
+  } catch (error) {
+    throw new Error("URL is not well-formed.");
+  }
+
+  if (url.protocol !== "https:") {
+    throw new Error("URL must use the HTTPS protocol.");
+  }
+
+  // Normalize hostname by removing 'www.' if present for consistent validation
+  const hostname = url.hostname.replace(/^www\./i, "");
+
+  const blockedDomains = [
+    "linkedin.com",
+    "facebook.com",
+    "youtube.com",
+    "twitter.com",
+    "instagram.com",
+    "wikipedia.org",
+    "amazon.com",
+    "apple.com",
+    "google.com",
+    "microsoft.com",
+    "github.com",
+    "stackoverflow.com",
+    "reddit.com",
+    "quora.com",
+    "medium.com",
+    "pinterest.com",
+    "tiktok.com",
+    "snapchat.com",
+    // Add more blocked domains as needed
   ];
 
-  if (majorDomains.some((domain) => url.includes(domain))) {
-    return {
-      validUrl: false,
-    };
+  if (
+    blockedDomains.some(
+      (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
+    )
+  ) {
+    throw new Error("URL domain is not allowed.");
   }
 
-  // TODO: simulate checking if "live" or "200 status" => pass
+  // Optionally, perform a HEAD request to verify the URL is live
+  // This requires making the function asynchronous
+  /*
+  try {
+    const response = await fetch(url.toString(), { method: "HEAD" });
+    if (!response.ok) {
+      throw new Error(`URL responded with status ${response.status}.`);
+    }
+  } catch (error) {
+    throw new Error("Unable to reach the provided URL.");
+  }
+  */
+
   return {
     validUrl: true,
+    userUrl: url.toString(),
   };
 }

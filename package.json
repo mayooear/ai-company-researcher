@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
+    "demo": "tsx src/demo.ts",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=\\.test\\.ts$ --testPathIgnorePatterns=\\.int\\.test\\.ts$",
     "test:int": "node --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=\\.int\\.test\\.ts$",
     "format": "prettier --write .",
@@ -22,9 +23,11 @@
     "@langchain/community": "^0.3.26",
     "@langchain/core": "^0.3.32",
     "@langchain/langgraph": "^0.2.41",
+    "@langchain/langgraph-cli": "^0.0.1",
     "@langchain/langgraph-sdk": "^0.0.36",
     "@langchain/openai": "^0.3.17",
     "@mendable/firecrawl-js": "^1.15.7",
+    "ws": "^8.18.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -34,8 +37,8 @@
     "@tsconfig/recommended": "^1.0.7",
     "@types/jest": "^29.5.0",
     "@types/node": "^22.10.6",
-    "@typescript-eslint/eslint-plugin": "^5.59.8",
-    "@typescript-eslint/parser": "^5.59.8",
+    "@typescript-eslint/eslint-plugin": "5.59.8",
+    "@typescript-eslint/parser": "5.59.8",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "eslint": "^8.41.0",

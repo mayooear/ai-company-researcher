@@ -1,3 +1,4 @@
+import { firecrawlClient } from "../clients/FireCrawlApi.js";
 import { completeExtractedCompanyInfoSchema } from "../schema.js";
 import { CompanyResearchState } from "../state.js";
 import { validateFirecrawlExtraction } from "../tests/utils.js";
@@ -6,11 +7,23 @@ import { CompleteExtractedCompanyInfo } from "../types.js";
 export async function firecrawlExtractNode(
   state: CompanyResearchState,
 ): Promise<Partial<CompanyResearchState>> {
-  const url = state.userUrl;
-  const result = await callFirecrawlExtract(
-    url,
-    completeExtractedCompanyInfoSchema,
-  );
+  let url = state.userUrl.trim();
+  url = url.replace(/\/\*+$/, "");
+  url = url + "/*"; // crawls the entire site
+
+  const result = await firecrawlClient.extract([url], {
+    schema: completeExtractedCompanyInfoSchema,
+    prompt: `Extract the following key information about the company using the data below: 
+    - company name
+    - mission statement
+    - key persons including their name, role, social media, and email
+    - products, features, and pricing
+    - target market
+    - company logo
+    - company notable clients and customers
+    - company case studies and recent articles (make sure to include the urls)
+    `,
+  });
 
   if (result.success && result.data) {
     //validate key persons
@@ -23,41 +36,5 @@ export async function firecrawlExtractNode(
   return {
     crawledData: undefined,
     validatedKeyPersons: false,
-  };
-}
-
-/** Firecrawl: extract with a schema */
-async function callFirecrawlExtract(
-  url: string,
-  schema: object,
-): Promise<{
-  success: boolean;
-  data?: CompleteExtractedCompanyInfo;
-}> {
-  // Dummy result (missing a CEO)
-  return {
-    success: true,
-    data: {
-      company: {
-        name: "SomeCo, Inc.",
-        mission_statement: "Build best AI solutions.",
-        products: [
-          { name: "AI Widget", features: "Fancy features", pricing: "$5000" },
-        ],
-        target_market: "Enterprise",
-        logo: "https://someco.com/logo.png",
-        notable_clients: ["BigTech", "AlphaCorp"],
-        case_studies: ["Case Study 1", "Case Study 2"],
-        recent_articles: ["Article 1", "Article 2"],
-      },
-      key_persons: [
-        // No CEO => fallback needed
-        {
-          name: "James R",
-          role: "CTO",
-          description: "James is the CTO at SomeCo, Inc.",
-        },
-      ],
-    },
   };
 }
