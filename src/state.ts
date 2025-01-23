@@ -21,8 +21,12 @@ export const CompanyResearchAnnotation = Annotation.Root({
   validatedKeyPersons: Annotation<boolean>(),
 
   // The fallback discovered key persons from the Firecrawl /search approach
-  fallbackSearchKeyPersons: Annotation<FallbackSearchResult>(),
-
+  fallbackSearchKeyPersons: Annotation<FallbackSearchResult>({
+    reducer: (state: FallbackSearchResult, update: FallbackSearchResult) => {
+      return [...state, ...update];
+    },
+    default: () => []
+  }),
   // The final merged key persons
   finalKeyPersons: Annotation<ExtractedKeyPerson[]>(),
 
