@@ -86,7 +86,7 @@ export async function generateReportNode(
   console.log('isRevision', isRevision);
   const finalReport = await generateFinalReport(llm, prompt);
   console.log('finalReport', finalReport);
-  const finalReportJson = JSON.stringify(finalReport);
+  const finalReportJson = finalReport;
   return {
     finalReport: finalReportJson,
     reportRevisionsIncrement: revisionIncrement,
