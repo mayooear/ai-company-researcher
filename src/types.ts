@@ -1,6 +1,7 @@
 import {
   extractedCompanyInfoSchema,
   fallbackSearchResultSchema,
+  generatedReportSchema,
 } from "./schema.js";
 
 import { extractedKeyPersonSchema } from "./schema.js";
@@ -25,10 +26,12 @@ type CompleteExtractedCompanyInfo = z.infer<
   typeof completeExtractedCompanyInfoSchema
 >;
 type FallbackSearchResult = z.infer<typeof fallbackSearchResultSchema>;
+type GeneratedReport = z.infer<typeof generatedReportSchema>;
 
 export {
   ExtractedCompanyInfo,
   ExtractedKeyPerson,
   CompleteExtractedCompanyInfo,
   FallbackSearchResult,
+  GeneratedReport
 };

@@ -3,6 +3,7 @@ import {
   CompleteExtractedCompanyInfo,
   ExtractedKeyPerson,
   FallbackSearchResult,
+  GeneratedReport,
   UserAction,
 } from "./types.js";
 
@@ -27,7 +28,7 @@ export const CompanyResearchAnnotation = Annotation.Root({
   finalKeyPersons: Annotation<ExtractedKeyPerson[]>(),
 
   // The final JSON-based summary about the company
-  finalReport: Annotation<string>(),
+  finalReport: Annotation<GeneratedReport>(),
 
   // We'll store the user's action from the human review step
   userAction: Annotation<UserAction | null>(),
@@ -44,8 +45,8 @@ export const CompanyResearchAnnotation = Annotation.Root({
   }),
 
   // Array of generated report revisions
-  reportRevisions: Annotation<string[]>({
-    reducer: (state, update) => state.concat(update),
+  reportRevisions: Annotation<GeneratedReport[]>({
+    reducer: (state, update) => (state).concat(update),
     default: () => [],
   }),
 });
