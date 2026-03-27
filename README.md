@@ -1,5 +1,9 @@
 # AI Agent Company Researcher
 
+> [!IMPORTANT]
+> This project is no longer actively maintained and is kept here for reference.
+> Please do not expect responses to new issues or pull requests.
+
 It can take several human hours to research the key information about a company and their key persons/decision makers. This app is built to automate this process and reduce this research and propsecting time to less than a minute using the power of AI agents.
 
 The user simply provides a valid `url` of the company, and within a minute, the agent will generate a concise company research report.
